@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Little Firefly's Journey</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e0f2fe; /* Lighter, more serene blue background */
+            color: #2c3e50; /* Darker text for readability */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow: hidden; /* Prevent body scroll from fireflies */
+        }
+        /* Custom styles for firefly animation and subtle glows */
+        .firefly {
+            position: absolute;
+            background-color: #fcd34d; /* Amber glow */
+            border-radius: 50%;
+            opacity: 0.8;
+            animation: pulse 2s infinite alternate;
+            box-shadow: 0 0 12px 6px rgba(252, 211, 77, 0.7); /* Slightly stronger glow */
+            z-index: 10;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.8); opacity: 0.6; }
+            100% { transform: scale(1.2); opacity: 1; }
+        }
+
+        .story-container {
+            max-width: 850px; /* Slightly wider container */
+            width: 100%;
+            background-color: #ffffff;
+            border-radius: 1.25rem; /* More rounded corners */
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15); /* Stronger shadow */
+            padding: 3rem; /* Increased padding */
+            text-align: center;
+            position: relative;
+            overflow: hidden; /* Ensure fireflies don't go out of bounds */
+            border: 1px solid #d1e2f0; /* Subtle border */
+        }
+
+        h1 {
+            color: #1a237e; /* Deeper blue for heading */
+            font-size: 2.8rem; /* Even larger title */
+            margin-bottom: 1.8rem;
+            font-weight: 800; /* Bolder title */
+            letter-spacing: -0.05em; /* Tighter letter spacing for impact */
+        }
+
+        .story-text {
+            font-size: 1.35rem; /* Larger text for readability */
+            line-height: 1.9;
+            margin-bottom: 2.5rem;
+            color: #546e7a; /* Muted body text */
+        }
+
+        .option-button {
+            display: inline-block;
+            background-color: #7c3aed; /* Vibrant purple button */
+            color: white;
+            padding: 1rem 2rem; /* Larger padding */
+            border-radius: 2rem; /* Pill-shaped buttons */
+            text-decoration: none;
+            font-weight: 700;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            margin: 0.75rem; /* Increased margin */
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            box-shadow: 0 6px 15px rgba(124, 58, 237, 0.4);
+            letter-spacing: 0.02em;
+        }
+
+        .option-button:hover {
+            background-color: #6d28d9; /* Darker purple on hover */
+            transform: translateY(-3px); /* More pronounced lift */
+            box-shadow: 0 8px 20px rgba(124, 58, 237, 0.5);
+        }
+
+        .option-button:active {
+            transform: translateY(0);
+            box-shadow: 0 3px 8px rgba(124, 58, 237, 0.3);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .story-container {
+                padding: 2rem;
+            }
+            h1 {
+                font-size: 2.2rem;
+            }
+            .story-text {
+                font-size: 1.1rem;
+            }
+            .option-button {
+                padding: 0.9rem 1.6rem;
+                font-size: 1.05rem;
+                margin: 0.4rem;
+                border-radius: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="story-container">
+        <!-- Fireflies will be dynamically added here -->
+        <div id="firefly-container" class="absolute inset-0 pointer-events-none"></div>
+
+        <h1 id="story-title"></h1>
+        <p id="story-text" class="story-text"></p>
+        <div id="choices" class="flex flex-wrap justify-center mt-8">
+            <!-- Buttons will be dynamically added here -->
+        </div>
+    </div>
+
+    <script>
+        // Define the story chapters
+        const story = {
+            start: {
+                title: "A Gentle Whisper in the Enchanted Woods",
+                text: "One quiet evening, as twilight painted the sky in soft hues of lavender and rose, a tiny firefly found itself a little lost. Its light flickered with a touch of sadness, unsure which way to fly in the vast, shimmering forest. Would you gently guide this little friend?",
+                choices: [
+                    { text: "Follow a faint, beckoning glow in the distance", next: "path_glow" },
+                    { text: "Rest on a soft, emerald mossy patch, seeking solace", next: "path_rest" },
+                    { text: "Listen closely to the ancient, rustling wind", next: "wind_whispers" } // New choice
+                ]
+            },
+            path_glow: {
+                title: "Towards the Gentle, Mysterious Light",
+                text: "You encourage the firefly towards a distant, warm glow. It gracefully flits past dew-kissed leaves, each tiny droplet shimmering like a miniature star. As it gets closer, it sees a group of friendly forest sprites, their tiny forms luminous, tending to a patch of vibrant, glowing mushrooms. They look up with kind, sparkling eyes.",
+                choices: [
+                    { text: "Humbly ask the sprites for directions home", next: "sprites_help" },
+                    { text: "Watch the dazzling, luminous mushrooms in quiet wonder", next: "mushrooms_wonder" }
+                ]
+            },
+            path_rest: {
+                title: "A Moment of Serene Peace",
+                text: "The firefly, with your gentle guidance, lands softly on a bed of plush, emerald moss. The forest breathes a lullaby: the soft rustle of leaves, the distant, comforting hoot of an owl. A tiny, curious ladybug with glossy red wings crawls by, offering a friendly antennae wiggle.",
+                choices: [
+                    { text: "Follow the ladybug deeper into the inviting moss", next: "ladybug_lead" },
+                    { text: "Close your eyes and simply enjoy the peaceful moment under the moonlight", next: "moonlight_peace" }
+                ]
+            },
+            wind_whispers: { // New chapter
+                title: "Secrets Carried by the Breezes",
+                text: "You guide the firefly to listen to the whispers of the wind. It carries scents of pine and damp earth, and a faint, sweet melody. The wind seems to gently tug the firefly in a particular direction, towards a cluster of ancient trees.",
+                choices: [
+                    { text: "Seek the wisdom of the oldest, gnarled willow tree", next: "old_willow" },
+                    { text: "Investigate the source of the soft, inviting melody", next: "glowing_berries" }
+                ]
+            },
+            sprites_help: {
+                title: "Guided by Kindred, Shining Spirits",
+                text: "The sprites, with their tiny, melodious voices, point the firefly towards a winding path lined with iridescent moonpetal flowers. 'Follow their gentle shimmer, little friend,' they chime, 'they'll lead you true to your home.' The firefly feels a comforting warmth spread through its tiny body.",
+                choices: [
+                    { text: "Thank the benevolent sprites and follow the moonpetals", next: "moonpetals_path" }
+                ]
+            },
+            mushrooms_wonder: {
+                title: "A Dazzling, Secret Display",
+                text: "Mesmerized by the ethereal glow of the mushrooms, the firefly dances playfully among them. Their soft, pulsed light reveals a hidden, almost invisible path, clearer than any map. It's as if the ancient forest itself is showing the way, just for its tiny, lost friend.",
+                choices: [
+                    { text: "Bravely take the newly revealed, luminous path", next: "hidden_path" }
+                ]
+            },
+            ladybug_lead: {
+                title: "An Unexpected, Tiny Companion",
+                text: "The friendly ladybug leads the firefly to a sparkling hidden stream, where fireflies often gather to drink the purest morning dew. The cool water beautifully reflects the starlit sky, and the air is filled with a deep sense of calm belonging. Other fireflies sparkle a warm, silent welcome.",
+                choices: [
+                    { text: "Join the other fireflies by the tranquil stream", next: "stream_gathering" }
+                ]
+            },
+            moonlight_peace: {
+                title: "Under the Silver-Kissed Glow",
+                text: "As the firefly rests, the ethereal moonlight filters gently through the dense canopy, painting intricate silver patterns on the forest floor. A profound sense of gentle peace washes over it. It realizes that even in stillness, new insights and paths can gracefully reveal themselves.",
+                choices: [
+                    { text: "Look for a celestial sign in the vast moonlight", next: "moon_sign" }
+                ]
+            },
+            old_willow: { // New chapter
+                title: "The Wisdom of the Ancient Willow",
+                text: "You guide the firefly to a magnificent, ancient willow, its branches weeping gracefully. A gentle, resonant hum emanates from its trunk, a feeling of deep serenity. It seems to whisper, 'Home is where the heart finds its echo.'",
+                choices: [
+                    { text: "Trust the tree's gentle, invisible pull", next: "hidden_path" }, // Leads to existing path
+                    { text: "Seek the stream hinted at by the wind's earlier whisper", next: "ladybug_lead" } // Leads to existing path
+                ]
+            },
+            glowing_berries: { // New chapter
+                title: "A Grove of Luminous Berries",
+                text: "Following the melody, you find a hidden grove where clusters of berries glow with a soft, internal light, humming a quiet tune. The air here is sweet and incredibly peaceful, like a tiny sanctuary.",
+                choices: [
+                    { text: "Gently taste a dewdrop from a glowing berry", next: "moonlight_peace" }, // Leads to existing path
+                    { text: "Let the berries' combined glow guide the way forward", next: "path_glow" } // Leads to existing path
+                ]
+            },
+            moonpetals_path: {
+                title: "The Trail of Shimmering, Guiding Petals",
+                text: "The moonpetal flowers truly do shimmer with an inner light! Each one pulses softly, a living beacon, guiding the firefly through a gentle, fragrant meadow. The air smells impossibly sweet, and a powerful feeling of hope blossoms vibrantly in its tiny heart.",
+                choices: [
+                    { text: "Continue following the enchanting moonpetals", next: "home_found" }
+                ]
+            },
+            hidden_path: {
+                title: "A Clear and Bright, Ancient Way",
+                text: "The hidden path, once unseen, is now clear, wide, and inviting. It gracefully leads through a majestic archway formed by ancient, gnarled trees, whose wise branches seem to whisper words of encouragement. The firefly feels lighter, knowing it's on the true track.",
+                choices: [
+                    { text: "Fly bravely through the grand archway", next: "home_found" }
+                ]
+            },
+            stream_gathering: {
+                title: "Welcome Home, Little One, to Warmth",
+                text: "At the serene stream, other fireflies greet your little friend with warm, synchronised twinkling lights. They joyfully share stories of their day, and the lost firefly feels a deep, comforting sense of belonging. It has found its way home, truly surrounded by its kin. A gentle, quiet joy fills the entire air, radiating peace.",
+                choices: [
+                    { text: "Embrace the profound warmth of finding home", next: "end_happy" }
+                ]
+            },
+            moon_sign: {
+                title: "A Starry, Celestial Revelation",
+                text: "As the firefly gazes up at the vast, moonlit sky, a brilliant shooting star streaks across, leaving a breathtaking trail of shimmering dust. It miraculously illuminates a path the firefly hadn't noticed before, leading directly to a familiar, comforting glow. It's the unmistakable light of its own family, patiently waiting.",
+                choices: [
+                    { text: "Follow the guiding starlight home, with all your heart", next: "home_found" }
+                ]
+            },
+            home_found: {
+                title: "Home at Last! A Symphony of Joy!",
+                text: "The firefly's light brightens dramatically with pure joy! It has found its way back to its beloved family, who greet it with enthusiastic, dancing lights and tiny, happy chirps. The night is now filled with overwhelming warmth, gentle laughter, and the soft, comforting glow of togetherness. You've helped it find its way, and in doing so, brought a little more light and hope into the world.",
+                choices: [
+                    { text: "Restart the Journey", next: "start" },
+                    { text: "Share a warm, imaginary hug with your firefly friend", next: "end_happy" }
+                ]
+            },
+            end_happy: {
+                title: "A Heart Full of Radiant Light",
+                text: "The firefly, now safe, happy, and glowing brilliantly, sends you a final, grateful sparkle. It wants you to remember that even when things feel a little lost or dim, there's always a gentle light to guide you, and kind hearts waiting to share their warmth. May your own heart be forever filled with this same comforting and radiant glow, knowing you have the power to illuminate the path for others, and for yourself. Keep shining!",
+                choices: [
+                    { text: "Play Again and find new paths of wonder", next: "start" }
+                ]
+            }
+        };
+
+        let currentChapter = "start";
+
+        const storyTitle = document.getElementById("story-title");
+        const storyText = document.getElementById("story-text");
+        const choicesDiv = document.getElementById("choices");
+        const fireflyContainer = document.getElementById("firefly-container");
+
+        /**
+         * Renders the current chapter of the story.
+         */
+        function renderChapter() {
+            const chapter = story[currentChapter];
+            if (!chapter) {
+                console.error("Chapter not found:", currentChapter);
+                return;
+            }
+
+            // Smooth transition for text
+            storyText.style.opacity = 0;
+            choicesDiv.style.opacity = 0;
+
+            setTimeout(() => {
+                storyTitle.textContent = chapter.title;
+                storyText.textContent = chapter.text;
+                choicesDiv.innerHTML = ""; // Clear previous choices
+
+                // Add new choices
+                if (chapter.choices) {
+                    chapter.choices.forEach(choice => {
+                        const button = document.createElement("button");
+                        button.textContent = choice.text;
+                        button.className = "option-button";
+                        button.onclick = () => choose(choice.next);
+                        choicesDiv.appendChild(button);
+                    });
+                }
+
+                storyText.style.opacity = 1;
+                choicesDiv.style.opacity = 1;
+            }, 300); // Short delay for fade out/in effect
+        }
+
+        /**
+         * Handles the user's choice and navigates to the next chapter.
+         * @param {string} nextChapterId The ID of the next chapter.
+         */
+        function choose(nextChapterId) {
+            currentChapter = nextChapterId;
+            renderChapter();
+        }
+
+        /**
+         * Creates and animates a single firefly with more dynamic movement.
+         */
+        function createFirefly() {
+            const firefly = document.createElement("div");
+            firefly.className = "firefly";
+            const size = Math.random() * 8 + 5; // Size between 5px and 13px
+            firefly.style.width = `${size}px`;
+            firefly.style.height = `${size}px`;
+
+            // Initial position (random)
+            let currentX = Math.random() * window.innerWidth;
+            let currentY = Math.random() * window.innerHeight;
+            firefly.style.left = `${currentX}px`;
+            firefly.style.top = `${currentY}px`;
+            firefly.style.animationDuration = `${Math.random() * 2 + 1.5}s`; // 1.5s to 3.5s pulse
+
+            fireflyContainer.appendChild(firefly);
+
+            // Animate movement
+            function animateFirefly() {
+                const targetX = Math.random() * window.innerWidth;
+                const targetY = Math.random() * window.innerHeight;
+                const duration = Math.random() * 8 + 7; // 7s to 15s movement for smoother, longer paths
+
+                firefly.style.transition = `transform ${duration}s ease-in-out, opacity 1s ease-in-out`;
+                firefly.style.transform = `translate(${targetX - currentX}px, ${targetY - currentY}px)`;
+                currentX = targetX;
+                currentY = targetY;
+
+                // Make fireflies fade out slightly and reappear at new position for smoother loop
+                firefly.style.opacity = 0.3;
+                setTimeout(() => {
+                    firefly.style.transition = 'none'; // Remove transition for instant reposition
+                    firefly.style.transform = `translate(0, 0)`; // Reset transform
+                    firefly.style.left = `${currentX}px`;
+                    firefly.style.top = `${currentY}px`;
+                    firefly.style.opacity = 0.8; // Fade back in
+                    setTimeout(animateFirefly, 50); // Short delay before starting next movement with transition
+                }, duration * 1000);
+            }
+            animateFirefly(); // Start initial animation
+        }
+
+        /**
+         * Initializes the firefly animation by creating multiple fireflies.
+         */
+        function initFireflies() {
+            for (let i = 0; i < 20; i++) { // Create 20 fireflies for more density
+                createFirefly();
+            }
+        }
+
+        // Initialize the story and fireflies when the window loads
+        window.onload = function() {
+            renderChapter();
+            initFireflies();
+            // Recalculate firefly positions on window resize
+            window.addEventListener('resize', () => {
+                fireflyContainer.innerHTML = ''; // Clear existing fireflies
+                initFireflies(); // Reinitialize them with new window dimensions
+            });
+        };
+    </script>
+</body>
+</html>
